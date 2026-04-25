@@ -81,9 +81,50 @@ function __nl_enter --description 'Enter key handler: NL routing with spinner + 
                 end
                 exec claude --resume "$sid"
             end
-            # No matching session → fall through to normal NL processing so
-            # the user isn't blocked. (e.g. they meant "continue with the
-            # ASCII art" in chat, not a project name we know.)
+            # No live session matched. Before falling through to NL chat
+            # classification (which would guess at a `cd` command and probably
+            # get the path wrong), search common project parents for a folder
+            # whose name matches the resume target. If we find one, offer to
+            # start a new claude session there.
+            set -l target_norm (string lower -- $resume_target | string replace -ar '[^a-z0-9]' '')
+            set -l found_dir ""
+            if test -n "$target_norm"
+                for parent in $HOME/Github $HOME/Code $HOME/projects $HOME/work $HOME/src $HOME/Documents
+                    test -d "$parent"; or continue
+                    for entry in $parent/*
+                        test -d "$entry"; or continue
+                        set -l name_norm (basename -- $entry | string lower | string replace -ar '[^a-z0-9]' '')
+                        if test "$target_norm" = "$name_norm"
+                            set found_dir "$entry"
+                            break
+                        end
+                    end
+                    test -n "$found_dir"; and break
+                end
+            end
+
+            if test -n "$found_dir"
+                commandline ''
+                commandline -f repaint
+                set_color brblack
+                printf '  no live session for "%s". start a new one in:' $resume_target
+                set_color normal
+                echo ""
+                set_color cyan; printf "  ➜  cd %s && claude" $found_dir; set_color normal
+                echo ""
+                set_color brblack; printf '     run? [Enter / Ctrl+C]  '; set_color normal
+                read -P '' -l _confirm
+                echo ""
+                if test $status -eq 0
+                    builtin cd $found_dir
+                    exec claude
+                end
+                return 0
+            end
+
+            # No live session AND no matching project dir → fall through to
+            # normal NL processing. (User might have meant "continue with the
+            # ASCII art" in chat, not a project we can find on disk.)
         end
     end
 
