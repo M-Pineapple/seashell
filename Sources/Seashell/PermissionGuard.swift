@@ -111,6 +111,27 @@ struct PermissionGuard {
         return approved
     }
 
+    /// Non-empty `reason` from args, or nil.
+    static func reason(from arguments: [String: MCP.Value]?) -> String? {
+        guard let arguments,
+              let reasonValue = arguments["reason"],
+              case .string(let reason) = reasonValue else {
+            return nil
+        }
+        let trimmed = reason.trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmed.isEmpty ? nil : trimmed
+    }
+
+    /// Tier C: approved flag plus a non-empty reason. The model cannot skip the reason.
+    static func isApprovedWithReason(_ arguments: [String: MCP.Value]?) -> Bool {
+        isApproved(arguments) && reason(from: arguments) != nil
+    }
+
+    /// Plaintext secret values stay withheld unless this environment flag is set.
+    static var allowSecretRead: Bool {
+        ProcessInfo.processInfo.environment["SEASHELL_ALLOW_SECRET_READ"] == "1"
+    }
+
     /// Build a standardised confirmation-request message for Tier B tools.
     static func confirmationMessage(
         for toolName: String,

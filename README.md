@@ -270,6 +270,7 @@ Grouped by tier. Used by Claude (in Desktop, in `claude` REPLs, in the daemon) â
 
 ### Wave secrets (Tier C â€” explicit approval required)
 - `wave_secret_list`, `wave_secret_set`, `wave_secret_get`, `wave_secret_delete`
+- Every secrets tool needs `approved=true` and a non-empty `reason`. `wave_secret_get` withholds the plaintext value unless `SEASHELL_ALLOW_SECRET_READ=1` is set in the server environment.
 
 ### Command execution
 - `execute_command`, `execute_with_auto_retrieve`, `execute_with_streaming`, `execute_pipeline`, `get_command_output`, `list_recent_commands`

@@ -1311,19 +1311,19 @@ struct Seashell: AsyncParsableCommand {
                 // ── Secrets ─────────────────────────────────────────────────────────
                 Tool(
                     name: "wave_secret_list",
-                    description: "List all Wave Terminal secret keys (Tier C — requires approved=true + reason). Requires the Seashell Helper.",
+                    description: "List all Wave Terminal secret keys (Tier C — requires approved=true and a non-empty reason). Requires the Seashell Helper.",
                     inputSchema: .object([
                         "type": .string("object"),
                         "properties": .object([
                             "approved": .object(["type": .string("boolean"), "description": .string("Set to true after reviewing the action")]),
                             "reason":   .object(["type": .string("string"),  "description": .string("Why you need to access secrets")])
                         ]),
-                        "required": .array([])
+                        "required": .array([.string("approved"), .string("reason")])
                     ])
                 ),
                 Tool(
                     name: "wave_secret_set",
-                    description: "Set a Wave Terminal secret (Tier C — requires approved=true + reason). Requires the Seashell Helper.",
+                    description: "Set a Wave Terminal secret (Tier C — requires approved=true and a non-empty reason). Requires the Seashell Helper.",
                     inputSchema: .object([
                         "type": .string("object"),
                         "properties": .object([
@@ -1332,12 +1332,12 @@ struct Seashell: AsyncParsableCommand {
                             "approved": .object(["type": .string("boolean"), "description": .string("Set to true to confirm")]),
                             "reason":   .object(["type": .string("string"),  "description": .string("Why you are setting this secret")])
                         ]),
-                        "required": .array([.string("key"), .string("value")])
+                        "required": .array([.string("key"), .string("value"), .string("approved"), .string("reason")])
                     ])
                 ),
                 Tool(
                     name: "wave_secret_get",
-                    description: "Read a Wave Terminal secret value (Tier C — requires approved=true + reason). Requires the Seashell Helper.",
+                    description: "Read a Wave Terminal secret (Tier C — requires approved=true and a non-empty reason). The plaintext value is withheld unless SEASHELL_ALLOW_SECRET_READ=1. Requires the Seashell Helper.",
                     inputSchema: .object([
                         "type": .string("object"),
                         "properties": .object([
@@ -1345,12 +1345,12 @@ struct Seashell: AsyncParsableCommand {
                             "approved": .object(["type": .string("boolean"), "description": .string("Set to true to confirm")]),
                             "reason":   .object(["type": .string("string"),  "description": .string("Why you need this secret")])
                         ]),
-                        "required": .array([.string("key")])
+                        "required": .array([.string("key"), .string("approved"), .string("reason")])
                     ])
                 ),
                 Tool(
                     name: "wave_secret_delete",
-                    description: "Delete a Wave Terminal secret (Tier C — requires approved=true + reason). Requires the Seashell Helper.",
+                    description: "Delete a Wave Terminal secret (Tier C — requires approved=true and a non-empty reason). Requires the Seashell Helper.",
                     inputSchema: .object([
                         "type": .string("object"),
                         "properties": .object([
@@ -1358,7 +1358,7 @@ struct Seashell: AsyncParsableCommand {
                             "approved": .object(["type": .string("boolean"), "description": .string("Set to true to confirm")]),
                             "reason":   .object(["type": .string("string"),  "description": .string("Why you are deleting this secret")])
                         ]),
-                        "required": .array([.string("key")])
+                        "required": .array([.string("key"), .string("approved"), .string("reason")])
                     ])
                 ),
 

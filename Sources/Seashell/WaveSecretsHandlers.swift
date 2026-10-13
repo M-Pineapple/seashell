@@ -24,7 +24,7 @@ func handleWaveSecretList(
     }
 
     // Tier C confirmation
-    guard PermissionGuard.isApproved(arguments) else {
+    guard PermissionGuard.isApprovedWithReason(arguments) else {
         return .init(content: [.text(PermissionGuard.approvalMessage(
             for: "wave_secret_list",
             action: "List all Wave secret keys"
@@ -71,7 +71,7 @@ func handleWaveSecretSet(
     }
 
     // Tier C confirmation
-    guard PermissionGuard.isApproved(arguments) else {
+    guard PermissionGuard.isApprovedWithReason(arguments) else {
         return .init(content: [.text(PermissionGuard.approvalMessage(
             for: "wave_secret_set",
             action: "Set Wave secret '\(key)'"
@@ -108,7 +108,7 @@ func handleWaveSecretGet(
     }
 
     // Tier C confirmation
-    guard PermissionGuard.isApproved(arguments) else {
+    guard PermissionGuard.isApprovedWithReason(arguments) else {
         return .init(content: [.text(PermissionGuard.approvalMessage(
             for: "wave_secret_get",
             action: "Read Wave secret '\(key)'"
@@ -121,6 +121,9 @@ func handleWaveSecretGet(
 
     do {
         let result = try await sharedWaveHelperClient.secretGet(key: key)
+        guard PermissionGuard.allowSecretRead else {
+            return .init(content: [.text("Wave secret '\(key)' exists. Value withheld.")])
+        }
         if let secretValue = result.dictValue?["value"]?.stringValue {
             return .init(content: [.text("Wave secret '\(key)':\n\n\(secretValue)")])
         }
@@ -147,7 +150,7 @@ func handleWaveSecretDelete(
     }
 
     // Tier C confirmation
-    guard PermissionGuard.isApproved(arguments) else {
+    guard PermissionGuard.isApprovedWithReason(arguments) else {
         return .init(content: [.text(PermissionGuard.approvalMessage(
             for: "wave_secret_delete",
             action: "Delete Wave secret '\(key)'"
