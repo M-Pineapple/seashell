@@ -46,7 +46,10 @@ let package = Package(
         ),
         .testTarget(
             name: "SeashellTests",
-            dependencies: ["Seashell"]
+            dependencies: [
+                "Seashell",
+                .product(name: "MCP", package: "swift-sdk"),
+            ]
         ),
     ]
 )
