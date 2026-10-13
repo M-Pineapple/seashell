@@ -6,6 +6,10 @@
 
 **Talk to Claude from any terminal block. Get answers back. Resume any past Claude Code session by name.**
 
+[![Licence: MIT](https://img.shields.io/github/license/M-Pineapple/seashell)](LICENSE)
+[![Swift](https://img.shields.io/badge/Swift-6-F05138?logo=swift&logoColor=white)](https://www.swift.org)
+[![Stars](https://img.shields.io/github/stars/M-Pineapple/seashell)](https://github.com/M-Pineapple/seashell/stargazers)
+
 An MCP server + shell toolkit that bridges [Wave Terminal](https://github.com/wavetermdev/waveterm), Claude Desktop, and Claude Code — turning multi-tab terminal work into seamless AI-collaborative coding.
 
 [Quick start](#quick-start) · [Installation](#installation) · [Commands](#commands-youll-use-every-day) · [Limitations](#limitations) · [FAQ](#faq)
@@ -434,6 +438,32 @@ seashell/
 - **[Anthropic](https://www.anthropic.com/)** — for the [Model Context Protocol](https://modelcontextprotocol.io), Claude Desktop, and Claude Code CLI.
 - **[fish shell](https://fishshell.com/)**, **[atuin](https://atuin.sh/)**, **[starship](https://starship.rs/)**, **[zoxide](https://github.com/ajeetdsouza/zoxide)**, **[fastfetch](https://github.com/fastfetch-cli/fastfetch)** — small tools that make the example config worth running.
 - **[Ollama](https://ollama.com/)** + the **Qwen** team — for the local LLM that powers the optional natural-language fish layer.
+
+## More MCP servers by M-Pineapple
+
+Other MCP servers in this portfolio:
+
+- [Claude Project Coordinator](https://github.com/M-Pineapple/Claude-Project-Coordinator). Track Xcode projects, status, tech stack and health.
+- [CryptoAnalysisMCP](https://github.com/M-Pineapple/CryptoAnalysisMCP). Cryptocurrency technical analysis for Claude Desktop.
+- [Warp Command Runner](https://github.com/M-Pineapple/warp-command-runner). Give any chat AI a real terminal.
+- [Msty Admin MCP](https://github.com/M-Pineapple/msty-admin-mcp). Administer Msty Studio Desktop.
+- [Member Berries](https://github.com/M-Pineapple/member-berries-apple-mcp). Apple Calendar, Notes and Reminders with personality.
+- [TextEdit MCP](https://github.com/M-Pineapple/TextEdit-MCP). Formatted RTF documents via macOS TextEdit.
+- [HubSpot Auditor](https://github.com/M-Pineapple/hubspot-auditor). Read-only HubSpot portal audit.
+
+## 💖 Support This Project
+
+If SeaShell has helped enhance your development workflow or saved you time, consider supporting its development:
+
+<a href="https://www.buymeacoffee.com/mpineapple" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
+
+Your support helps me:
+* Maintain and improve SeaShell with new features
+* Keep the project open-source and free for everyone
+* Dedicate more time to addressing user requests and bug fixes
+* Explore new integrations and features
+
+Thank you for considering supporting my work! 🙏
 
 ## License
 
