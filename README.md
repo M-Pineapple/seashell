@@ -20,6 +20,8 @@ An MCP server + shell toolkit that bridges [Wave Terminal](https://github.com/wa
 
 ---
 
+> **macOS only.** SeaShell is built for macOS (Swift, Darwin APIs) with Wave Terminal and Claude Desktop / Claude Code. It does not build or run on Linux or Windows.
+
 ## Quick start
 
 ```bash
