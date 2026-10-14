@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Fixture used only by docs/demo.tape. Same idea as the real
+# `seashell-sessions list`, compacted so it fits a README GIF.
+set -euo pipefail
+
+printf '📋 Claude Code sessions: 3 active\n'
+printf '\n'
+printf '  %-22s %-11s %s\n' 'LABEL' 'LAST' 'ID'
+printf '  %-22s %-11s %s\n' '----------------------' '-----------' '--------'
+printf '  %-22s %-11s %s  ★\n' 'Auth refactor' '2026-10-14' 'a1b2c3d4'
+printf '  %-22s %-11s %s  ★\n' 'Wave widget polish' '2026-10-13' '7f8e9d0c'
+printf '  %-22s %-11s %s\n' 'Invoice parser' '2026-10-12' '3c4d5e6f'
+printf '\n'
+printf '  ★ = registered via SessionStart hook (interactive Wave session)\n'

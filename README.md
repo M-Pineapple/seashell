@@ -4,7 +4,7 @@
 
 # SeaShell
 
-**Talk to Claude from any terminal block. Get answers back. Resume any past Claude Code session by name.**
+**Resume last night's Claude Code session from any terminal, by name.**
 
 [![Licence: MIT](https://img.shields.io/github/license/M-Pineapple/seashell)](LICENSE)
 [![Swift](https://img.shields.io/badge/Swift-6-F05138?logo=swift&logoColor=white)](https://www.swift.org)
@@ -14,9 +14,29 @@ An MCP server + shell toolkit that bridges [Wave Terminal](https://github.com/wa
 
 [Quick start](#quick-start) · [Installation](#installation) · [Commands](#commands-youll-use-every-day) · [Limitations](#limitations) · [FAQ](#faq)
 
+<img src="assets/demo.gif" alt="Listing named Claude Code sessions, then hey continue with myapp resuming last night's conversation" width="780"/>
+
 </div>
 
 ---
+
+## Quick start
+
+```bash
+# 1. Clone and build
+git clone https://github.com/M-Pineapple/seashell ~/Github/seashell
+cd ~/Github/seashell && ./build.sh
+
+# 2. Connect Claude and install `hey`
+#    Register the MCP server (Desktop config and/or `claude mcp add`. See Installation.)
+cd examples/wave-config && ./install.sh
+claude auth login
+
+# 3. Resume a session
+hey continue with <some-project>
+```
+
+Hooks, the optional daemon, and `hey what's the latest in <project>?` are in [Installation](#installation).
 
 ## What it is
 
@@ -45,28 +65,6 @@ Want me to walk through it?
 That's a fresh terminal. **Same conversation history** as last night's Claude Desktop Code-mode session. Full project memory. Fuzzy matching — `hey continue with ma` works too.
 
 Each project has a **pinned primary session** at `<project>/.seashell-inbox/primary-session.txt`, so `hey continue with <project>` always lands you in the same conversation — even if you've spawned multiple parallel sessions for the same repo. The pin is set automatically the first time you `seashell-init` (largest existing session wins) or on the first `claude` startup in that directory. Re-pin any session anytime with `seashell-sessions promote <id>`.
-
-## Quick start
-
-```bash
-# 1. Build
-git clone https://github.com/M-Pineapple/seashell ~/Github/seashell
-cd ~/Github/seashell && ./build.sh
-
-# 2. Register the MCP server with Claude Desktop AND/OR Claude Code CLI
-#    (Desktop config edit OR `claude mcp add --scope user seashell ...`)
-
-# 3. Sign in to your Claude subscription via the CLI
-claude auth login
-
-# 4. (Optional but highly recommended) Install the example bundle
-cd ~/Github/seashell/examples/wave-config && ./install.sh
-seashell-setup-hooks   # wire SessionStart + PostToolUse into ~/.claude/settings.json
-
-# 5. Try it
-hey continue with <some-project>          # resumes that project's latest session
-hey what's the latest in <project>?       # async question via inbox
-```
 
 ## Installation
 
@@ -408,6 +406,7 @@ seashell/
 ├── Package.swift                   ← Swift package manifest
 ├── build.sh / clean.sh             ← build scripts
 ├── setup.sh                        ← post-clone bootstrap
+├── assets/logo.svg, demo.gif       ← logo + README demo (regenerate with docs/demo/record.sh)
 │
 ├── Sources/
 │   ├── Seashell/                   ← MCP server, tool handlers, Wave adapter
@@ -419,6 +418,8 @@ seashell/
 ├── helper/seashell-helper          ← in-Wave Python helper (TCP proxy to wsh)
 ├── config/                         ← Claude Desktop config template
 ├── docs/                           ← architecture, INBOX, integration, helper protocol
+│   ├── demo.tape                   ← VHS script for assets/demo.gif
+│   └── demo/                       ← fixtures + record.sh
 ├── prompts/                        ← AI-assisted configuration prompts
 │
 └── examples/
@@ -451,6 +452,8 @@ Other MCP servers in this portfolio:
 - [Member Berries](https://github.com/M-Pineapple/member-berries-apple-mcp). Apple Calendar, Notes and Reminders with personality.
 - [TextEdit MCP](https://github.com/M-Pineapple/TextEdit-MCP). Formatted RTF documents via macOS TextEdit.
 - [HubSpot Auditor](https://github.com/M-Pineapple/hubspot-auditor). Read-only HubSpot portal audit.
+
+If this saves you time, a [star](https://github.com/M-Pineapple/seashell) helps others find it.
 
 ## 💖 Support This Project
 
