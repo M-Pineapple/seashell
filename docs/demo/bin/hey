@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# Fixture used only by docs/demo.tape. Matches the resume banner from the real
+# `hey` (examples/wave-config/bin/hey) then plays a canned Claude Code turn.
+# No network, no secrets, no live Claude.
+set -euo pipefail
+
+sleep 0.45
+printf '\033[36m🔄 Resuming session a1b2c3d4 (project: myapp)...\033[0m\n'
+sleep 1.0
+printf '\n'
+printf '> What'\''s the latest update on the auth refactor?\n'
+sleep 0.85
+printf '\n'
+printf 'We finished extracting the AuthService. Tests pass. Next is wiring it\n'
+sleep 0.22
+printf 'into the API layer — I have a draft in routes/auth.py on line 142.\n'
+sleep 0.22
+printf 'Want me to walk through it?\n'
+sleep 0.35
+printf '\n'
+# Stay in-session until VHS ends the tape (no trailing shell prompt).
+printf '› '
+sleep 60
