@@ -9,6 +9,7 @@
 [![Licence: MIT](https://img.shields.io/github/license/M-Pineapple/seashell)](LICENSE)
 [![Swift](https://img.shields.io/badge/Swift-6-F05138?logo=swift&logoColor=white)](https://www.swift.org)
 [![Stars](https://img.shields.io/github/stars/M-Pineapple/seashell)](https://github.com/M-Pineapple/seashell/stargazers)
+[![M-Pineapple/seashell MCP server](https://glama.ai/mcp/servers/M-Pineapple/seashell/badges/score.svg)](https://glama.ai/mcp/servers/M-Pineapple/seashell)
 
 An MCP server + shell toolkit that bridges [Wave Terminal](https://github.com/wavetermdev/waveterm), Claude Desktop, and Claude Code — turning multi-tab terminal work into seamless AI-collaborative coding.
 
