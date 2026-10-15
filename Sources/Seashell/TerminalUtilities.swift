@@ -82,9 +82,9 @@ func createAppleScript(for terminal: TerminalConfig.TerminalType, command: Strin
 /// Synchronous execution — no GCD, no continuations. Simple and reliable.
 /// Returns (success: Bool, output: String, exitCode: Int32)
 func executeWaveCommand(command: String, commandId: String, workingDirectory: String?, logger: Logging.Logger) -> (Bool, String, Int32) {
-    let outputFile = "/tmp/seashell_output_\(commandId).json"
-    let stdoutFile = "/tmp/seashell_stdout_\(commandId).txt"
-    let stderrFile = "/tmp/seashell_stderr_\(commandId).txt"
+    let outputFile = "\(SeashellTemp.dir)/seashell_output_\(commandId).json"
+    let stdoutFile = "\(SeashellTemp.dir)/seashell_stdout_\(commandId).txt"
+    let stderrFile = "\(SeashellTemp.dir)/seashell_stderr_\(commandId).txt"
 
     // Build shell command that redirects output to files
     let cdPrefix = workingDirectory.map { "cd \"\($0)\" && " } ?? ""
@@ -134,16 +134,17 @@ func executeWaveCommand(command: String, commandId: String, workingDirectory: St
 
 /// Create output capture script
 func createOutputCaptureScript(command: String, commandId: String) -> String {
-    let outputFile = "/tmp/seashell_output_\(commandId).json"
+    let outputFile = "\(SeashellTemp.dir)/seashell_output_\(commandId).json"
 
     return """
     #!/bin/bash
+    umask 077
 
     # Command to execute
     COMMAND='\(command.replacingOccurrences(of: "'", with: "'\"'\"'"))'
 
     # Create a temporary file for stderr
-    STDERR_FILE="/tmp/seashell_stderr_\(commandId).tmp"
+    STDERR_FILE="\(SeashellTemp.dir)/seashell_stderr_\(commandId).tmp"
 
     # Execute command and capture output
     OUTPUT=$(eval "$COMMAND" 2>"$STDERR_FILE")

@@ -344,15 +344,22 @@ func handleExecuteCommandV2(params: CallTool.Parameters, logger: Logger, config:
     if let workingDirectory = workingDirectory {
         fullCommand = "cd \"\(workingDirectory)\" && \(commandString)"
     }
+    if config.isCommandBlocked(fullCommand) {
+        logger.warning("Blocked command attempted: \(fullCommand)")
+        return CallTool.Result(
+            content: [.text("🚫 Command blocked by security policy. This command matches a blocked pattern.")],
+            isError: true
+        )
+    }
     
     // Create the output capture script
     let scriptContent = createOutputCaptureScript(command: fullCommand, commandId: commandId)
-    let tempScriptFile = "/tmp/claude_script_\(commandId).sh"
+    let tempScriptFile = "\(SeashellTemp.dir)/claude_script_\(commandId).sh"
     
     do {
         try scriptContent.write(toFile: tempScriptFile, atomically: true, encoding: .utf8)
         // Make script executable
-        try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: tempScriptFile)
+        try FileManager.default.setAttributes([.posixPermissions: SeashellTemp.scriptPOSIXPermissions], ofItemAtPath: tempScriptFile)
     } catch {
         logger.error("Failed to write script file: \(error)")
         return CallTool.Result(

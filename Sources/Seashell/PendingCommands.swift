@@ -4,7 +4,7 @@ import Logging
 
 /// Check for any commands that completed while Claude was "idle"
 func handleCheckPendingCommands(params: CallTool.Parameters, logger: Logger) async throws -> CallTool.Result {
-    let bridgeDir = "/tmp/claude_warp_bridge"
+    let bridgeDir = "\(SeashellTemp.dir)/claude_warp_bridge"
     let fileManager = FileManager.default
     
     var pendingCommands: [[String: Any]] = []

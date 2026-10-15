@@ -70,6 +70,13 @@ func handleExecuteCommandV2NoMonitoring(params: CallTool.Parameters, logger: Log
     if let workingDirectory = workingDirectory {
         fullCommand = "cd \"\(workingDirectory)\" && \(commandString)"
     }
+    if config.isCommandBlocked(fullCommand) {
+        logger.warning("Blocked command attempted: \(fullCommand)")
+        return CallTool.Result(
+            content: [.text("🚫 Command blocked by security policy. This command matches a blocked pattern.")],
+            isError: true
+        )
+    }
 
     // ── Wave Terminal ─────────────────────────────────────────────────────────
     if preferredTerminal == .wave {
@@ -140,7 +147,7 @@ func handleExecuteCommandV2NoMonitoring(params: CallTool.Parameters, logger: Log
                     encoder.dateEncodingStrategy = .iso8601
                     if let data = try? encoder.encode(result) {
                         try? data.write(
-                            to: URL(fileURLWithPath: "/tmp/seashell_output_\(bgCommandId).json"),
+                            to: URL(fileURLWithPath: "\(SeashellTemp.dir)/seashell_output_\(bgCommandId).json"),
                             options: .atomic
                         )
                     }
@@ -168,9 +175,9 @@ func handleExecuteCommandV2NoMonitoring(params: CallTool.Parameters, logger: Log
         }
 
         // ── Path B: helper not connected → silent posix_spawn + file capture ──
-        let stdoutFile = "/tmp/claude_wave_out_\(commandId).txt"
-        let stderrFile = "/tmp/claude_wave_err_\(commandId).txt"
-        let doneMarker = "/tmp/claude_wave_done_\(commandId)"
+        let stdoutFile = "\(SeashellTemp.dir)/claude_wave_out_\(commandId).txt"
+        let stderrFile = "\(SeashellTemp.dir)/claude_wave_err_\(commandId).txt"
+        let doneMarker = "\(SeashellTemp.dir)/claude_wave_done_\(commandId)"
         let shellCmd = "(\(fullCommand)) > \"\(stdoutFile)\" 2> \"\(stderrFile)\"; _rc=$?; echo $_rc > \"\(doneMarker)\"; exit $_rc"
 
         logger.info("Wave Terminal: spawning via posix_spawn (helper not connected)")
@@ -220,7 +227,7 @@ func handleExecuteCommandV2NoMonitoring(params: CallTool.Parameters, logger: Log
             let encoder = JSONEncoder()
             encoder.dateEncodingStrategy = .iso8601
             if let data = try? encoder.encode(result) {
-                try? data.write(to: URL(fileURLWithPath: "/tmp/seashell_output_\(bgCommandId).json"), options: .atomic)
+                try? data.write(to: URL(fileURLWithPath: "\(SeashellTemp.dir)/seashell_output_\(bgCommandId).json"), options: .atomic)
             }
             DispatchQueue.global(qos: .background).async {
                 _ = DatabaseManager.shared.updateCommand(bgCommandId, stdout: out, stderr: err, exitCode: Int(code), completedAt: Date())
@@ -241,12 +248,12 @@ func handleExecuteCommandV2NoMonitoring(params: CallTool.Parameters, logger: Log
 
     // Create the output capture script
     let scriptContent = createOutputCaptureScript(command: fullCommand, commandId: commandId)
-    let tempScriptFile = "/tmp/claude_script_\(commandId).sh"
+    let tempScriptFile = "\(SeashellTemp.dir)/claude_script_\(commandId).sh"
 
     do {
         try scriptContent.write(toFile: tempScriptFile, atomically: true, encoding: .utf8)
         // Make script executable
-        try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: tempScriptFile)
+        try FileManager.default.setAttributes([.posixPermissions: SeashellTemp.scriptPOSIXPermissions], ofItemAtPath: tempScriptFile)
     } catch {
         logger.error("Failed to write script file: \(error)")
         return CallTool.Result(
