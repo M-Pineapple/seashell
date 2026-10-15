@@ -2,6 +2,15 @@
 
 Notable changes to SeaShell are listed here. Earlier releases are on the [GitHub Releases](https://github.com/M-Pineapple/seashell/releases) page.
 
+## [Unreleased]
+
+### Security
+
+- Command scripts and captured output now go to a private per-user scratch folder (owner-only `0700`) instead of the shared `/tmp`. Scripts are written owner-only and run with `umask 077`.
+- `execute_pipeline`, `execute_with_streaming` and the working-directory form of `execute_command` now apply the blocked-commands policy, and the check is less sensitive to spacing and flag order. The list is a guard against mistakes, not a security boundary; the README now says so.
+
+Details are in a private advisory and will be published after release.
+
 ## [2.2.4] - 2026-10-14
 
 ### Documentation

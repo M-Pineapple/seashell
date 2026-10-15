@@ -224,9 +224,9 @@ public class CommandHistoryManager {
     public func loadFromCache() -> [CommandHistoryEntry] {
         var entries: [CommandHistoryEntry] = []
         
-        // Look for output files in /tmp
+        // Look for output files in the private scratch folder
         let fileManager = FileManager.default
-        let tmpDir = "/tmp"
+        let tmpDir = SeashellTemp.dir
         
         do {
             let files = try fileManager.contentsOfDirectory(atPath: tmpDir)

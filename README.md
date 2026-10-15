@@ -293,6 +293,7 @@ These aren't bugs — they're architectural realities worth knowing up front.
 | **Side blocks (activity tail + live code preview) only spawn from inside Wave Terminal.** They use `wsh createblock` which requires `WAVETERM_JWT`. | The hook checks for the env var before invoking `wsh`. When you start `claude` outside Wave (e.g. plain Terminal.app), the side blocks are silently skipped; everything else still works. |
 | **The autonomous daemon's `claude -p` sessions don't update Claude Desktop's open chat in real time.** | Claude Desktop holds its own in-memory state. New turns appended to the `.jsonl` from `claude --resume -p` only become visible after Desktop refreshes/reopens the session. If you have a session open AND the daemon writes to it concurrently, last-write-wins on the file. Pick one or the other to be "live". |
 | **High-volume use can hit Claude.ai subscription rate limits.** | The daemon batches one `claude -p` per project per polling cycle (default 5 s). For typical use this stays under limits. For heavy workloads, increase `SEASHELL_DAEMON_POLL`. |
+| **The blocked-commands list is a guard against mistakes, not a security boundary.** | It matches command text, so a determined caller can rephrase or encode a command. Only connect SeaShell to clients you trust. |
 | **No cross-machine sync** of inbox or session registry. | All state lives under `~/.seashell/` and `~/.claude/projects/`. You could symlink these into iCloud Drive but it's untested. |
 
 ## FAQ

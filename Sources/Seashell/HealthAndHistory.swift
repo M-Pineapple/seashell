@@ -293,7 +293,7 @@ private func checkTerminalAvailability() async -> (status: String, detail: Strin
 
 /// Check temp directory writability and cleanup status
 private func checkTempDirectory() -> (status: String, detail: String) {
-    let tempDir = "/tmp"
+    let tempDir = SeashellTemp.dir
     
     // Check writability
     let testFile = "\(tempDir)/claude_health_check_\(UUID().uuidString)"
@@ -301,7 +301,7 @@ private func checkTempDirectory() -> (status: String, detail: String) {
         try "test".write(toFile: testFile, atomically: true, encoding: .utf8)
         try FileManager.default.removeItem(atPath: testFile)
     } catch {
-        return ("❌", "Cannot write to /tmp: \(error.localizedDescription)")
+        return ("❌", "Cannot write to \(tempDir): \(error.localizedDescription)")
     }
     
     // Count orphaned claude files
@@ -351,7 +351,7 @@ private func checkRecentErrorRate() -> (status: String, detail: String) {
 
 /// Cleanup orphaned temp files (called on startup)
 func performTempCleanup(logger: Logger) {
-    let tempDir = "/tmp"
+    let tempDir = SeashellTemp.dir
     let maxAge: TimeInterval = 24 * 60 * 60 // 24 hours
     let now = Date()
     

@@ -1746,7 +1746,7 @@ func handleGetCommandOutput(params: CallTool.Parameters, logger: Logger) async -
     // If not in memory and not "last", try to read from disk
     if result == nil && commandId != "last" {
         logger.info("Not found in memory, checking disk...")
-        let outputFile = "/tmp/seashell_output_\(commandId).json"
+        let outputFile = "\(SeashellTemp.dir)/seashell_output_\(commandId).json"
         
         if FileManager.default.fileExists(atPath: outputFile) {
             do {
@@ -1786,7 +1786,7 @@ func handleGetCommandOutput(params: CallTool.Parameters, logger: Logger) async -
         return CallTool.Result(content: [.text(output)], isError: false)
     } else {
         // List available output files for debugging
-        let tempDir = "/tmp"
+        let tempDir = SeashellTemp.dir
         let files = try? FileManager.default.contentsOfDirectory(atPath: tempDir)
             .filter { $0.starts(with: "seashell_output_") && $0.hasSuffix(".json") }
             .sorted()
@@ -1805,7 +1805,7 @@ func handleGetCommandOutput(params: CallTool.Parameters, logger: Logger) async -
 
 // Function to wait for and retrieve command output
 func waitForCommandOutput(commandId: String, timeout: TimeInterval = 30, logger: Logger) async throws -> CommandExecutionResult? {
-    let outputFile = "/tmp/seashell_output_\(commandId).json"
+    let outputFile = "\(SeashellTemp.dir)/seashell_output_\(commandId).json"
     let markerFile = "\(outputFile).complete"
     
     let startTime = Date()
