@@ -42,7 +42,7 @@ struct Seashell: AsyncParsableCommand {
             enabling Claude to execute commands directly, manage Wave configuration,
             and control terminal blocks via the helper proxy.
 
-            Version 2.2.4: Wave Terminal integration with direct execution!
+            Version 2.2.5: Wave Terminal integration with direct execution!
             """
     )
     
@@ -109,7 +109,7 @@ struct Seashell: AsyncParsableCommand {
         let _ = logLevel != "info" ? logLevel : config.logging.level
         
         if verbose {
-            logger.info("Starting Seashell MCP Server v2.2.4...")
+            logger.info("Starting Seashell MCP Server v2.2.5...")
             logger.info("Port: \(actualPort)")
             logger.info("Two-way communication: ENABLED")
             logger.info("Configuration loaded from: \(ConfigurationManager.configDirectoryPath)")
@@ -124,7 +124,7 @@ struct Seashell: AsyncParsableCommand {
         // Create the MCP server
         let server = Server(
             name: "Seashell",
-            version: "2.2.4",
+            version: "2.2.5",
             capabilities: .init(
                 tools: .init(listChanged: false)
             )
