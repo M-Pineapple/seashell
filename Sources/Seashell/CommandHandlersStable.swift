@@ -1,5 +1,9 @@
 import Foundation
+#if canImport(Darwin)
 import Darwin
+#elseif canImport(Glibc)
+import Glibc
+#endif
 import MCP
 import Logging
 
@@ -175,6 +179,12 @@ func handleExecuteCommandV2NoMonitoring(params: CallTool.Parameters, logger: Log
         }
 
         // ── Path B: helper not connected → silent posix_spawn + file capture ──
+        #if !canImport(Darwin)
+        return CallTool.Result(
+            content: [.text("This tool needs macOS. It isn't available on Linux.")],
+            isError: true
+        )
+        #else
         let stdoutFile = "\(SeashellTemp.dir)/claude_wave_out_\(commandId).txt"
         let stderrFile = "\(SeashellTemp.dir)/claude_wave_err_\(commandId).txt"
         let doneMarker = "\(SeashellTemp.dir)/claude_wave_done_\(commandId)"
@@ -242,9 +252,16 @@ func handleExecuteCommandV2NoMonitoring(params: CallTool.Parameters, logger: Log
         Use get_command_output with command_id "\(commandId)" to retrieve results.
         (Usually ready within 1-2 seconds for simple commands.)
         """)], isError: false)
+        #endif
     }
 
     // ── Other terminals: AppleScript keystroke approach ────────────────────
+    #if !canImport(Darwin)
+    return CallTool.Result(
+        content: [.text("This tool needs macOS. It isn't available on Linux.")],
+        isError: true
+    )
+    #endif
 
     // Create the output capture script
     let scriptContent = createOutputCaptureScript(command: fullCommand, commandId: commandId)

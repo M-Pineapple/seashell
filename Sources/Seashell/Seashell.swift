@@ -72,10 +72,13 @@ struct Seashell: AsyncParsableCommand {
         
         let logger = Logger(label: "seashell.server")
         
-        // Force database initialization at startup
+        // Force database initialization at startup. Linux builds have no
+        // SQLite module, so this does not create or open a database there.
+        #if canImport(SQLite3)
         logger.info("Initializing database...")
         _ = DatabaseManager.shared
         logger.info("Database initialization complete")
+        #endif
         
         // v4.1.0: Perform temp file cleanup on startup
         performTempCleanup(logger: logger)

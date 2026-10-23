@@ -1,5 +1,7 @@
 import Foundation
+#if canImport(AppKit)
 import AppKit
+#endif
 
 /// Terminal configuration and detection
 public struct TerminalConfig {
@@ -12,6 +14,9 @@ public struct TerminalConfig {
 
     /// Detect which terminals are installed
     public static func detectInstalledTerminals() -> [TerminalType] {
+        #if !canImport(AppKit)
+        return []
+        #else
         var installed: [TerminalType] = []
         let workspace = NSWorkspace.shared
 
@@ -23,6 +28,7 @@ public struct TerminalConfig {
         }
 
         return installed
+        #endif
     }
 
     /// Get the preferred terminal from config or auto-detect

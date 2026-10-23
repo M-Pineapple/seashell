@@ -45,6 +45,7 @@ actor FileWatcher {
         }
     }
 
+    #if canImport(Darwin)
     /// Active watch session with its dispatch source
     private struct ActiveWatch {
         let rule: WatchRule
@@ -263,6 +264,24 @@ actor FileWatcher {
             logger.error("FileWatcher: Failed to execute command: \(error)")
         }
     }
+    #else
+    static let shared = FileWatcher()
+    private init() {}
+
+    func addWatch(_ rule: WatchRule) throws -> WatchRule {
+        throw FileWatcherError.cannotOpenPath(rule.path)
+    }
+
+    func removeWatch(id: String) -> Bool { false }
+
+    func pauseWatch(id: String) -> Bool { false }
+
+    func resumeWatch(id: String) -> Bool { false }
+
+    func listWatches() -> [WatchRule] { [] }
+
+    func removeAll() {}
+    #endif
 
     /// Find files recently modified in a directory matching given extensions
     private func findRecentlyModifiedFiles(in directory: String, extensions: [String], since: Date) -> [URL] {
@@ -310,6 +329,12 @@ enum FileWatcherError: Swift.Error, LocalizedError {
 
 /// Add a file watcher rule
 func handleAddFileWatch(params: CallTool.Parameters, logger: Logger) async -> CallTool.Result {
+    #if !canImport(Darwin)
+    return CallTool.Result(
+        content: [.text("This tool needs macOS. It isn't available on Linux.")],
+        isError: true
+    )
+    #endif
     guard let arguments = params.arguments,
           let pathValue = arguments["path"],
           case .string(let path) = pathValue,
@@ -386,6 +411,12 @@ func handleAddFileWatch(params: CallTool.Parameters, logger: Logger) async -> Ca
 
 /// Remove a file watcher
 func handleRemoveFileWatch(params: CallTool.Parameters, logger: Logger) async -> CallTool.Result {
+    #if !canImport(Darwin)
+    return CallTool.Result(
+        content: [.text("This tool needs macOS. It isn't available on Linux.")],
+        isError: true
+    )
+    #endif
     guard let arguments = params.arguments,
           let idValue = arguments["watcher_id"],
           case .string(let watchId) = idValue else {
@@ -412,6 +443,12 @@ func handleRemoveFileWatch(params: CallTool.Parameters, logger: Logger) async ->
 
 /// List all file watchers
 func handleListFileWatches(params: CallTool.Parameters, logger: Logger) async -> CallTool.Result {
+    #if !canImport(Darwin)
+    return CallTool.Result(
+        content: [.text("This tool needs macOS. It isn't available on Linux.")],
+        isError: true
+    )
+    #endif
     let watches = await FileWatcher.shared.listWatches()
 
     if watches.isEmpty {

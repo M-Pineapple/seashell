@@ -37,7 +37,7 @@ let package = Package(
                 .product(name: "NIOFoundationCompat", package: "swift-nio"),
             ],
             linkerSettings: [
-                .linkedLibrary("sqlite3")
+                .linkedLibrary("sqlite3", .when(platforms: [.macOS]))
             ]
         ),
         .executableTarget(

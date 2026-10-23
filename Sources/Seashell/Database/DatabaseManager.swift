@@ -1,6 +1,7 @@
 import Foundation
-import SQLite3
 import Logging
+#if canImport(SQLite3)
+import SQLite3
 
 // SQLite constants
 fileprivate let SQLITE_TRANSIENT = unsafeBitCast(-1, to: sqlite3_destructor_type.self)
@@ -725,6 +726,8 @@ extension DatabaseManager {
         }
     }
 }
+
+#endif
 
 // MARK: - Models
 
