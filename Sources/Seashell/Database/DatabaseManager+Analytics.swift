@@ -1,4 +1,5 @@
 import Foundation
+#if canImport(SQLite3)
 import SQLite3
 
 // MARK: - Analytics Extensions
@@ -278,3 +279,4 @@ extension DatabaseManager {
         }
     }
 }
+#endif

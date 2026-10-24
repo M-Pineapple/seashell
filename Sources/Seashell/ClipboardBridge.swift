@@ -49,7 +49,7 @@ func handleCopyToClipboard(params: CallTool.Parameters, logger: Logger) async ->
     }
     #else
     return CallTool.Result(
-        content: [.text("❌ Clipboard operations require macOS with AppKit")],
+        content: [.text("This tool needs macOS. It isn't available on Linux.")],
         isError: true
     )
     #endif
@@ -86,7 +86,7 @@ func handleReadFromClipboard(params: CallTool.Parameters, logger: Logger) async 
     }
     #else
     return CallTool.Result(
-        content: [.text("❌ Clipboard operations require macOS with AppKit")],
+        content: [.text("This tool needs macOS. It isn't available on Linux.")],
         isError: true
     )
     #endif
