@@ -22,7 +22,8 @@ actor CommandReceiverService: Service {
     func run() async throws {
         let eventLoopGroup = MultiThreadedEventLoopGroup(numberOfThreads: 1)
         self.eventLoopGroup = eventLoopGroup
-        
+        defer { self.eventLoopGroup = nil }
+
         let bootstrap = ServerBootstrap(group: eventLoopGroup)
             .serverChannelOption(ChannelOptions.backlog, value: 256)
             .serverChannelOption(ChannelOptions.socketOption(.so_reuseaddr), value: 1)
@@ -33,28 +34,41 @@ actor CommandReceiverService: Service {
                     CommandHandler(server: self.server, logger: self.logger)
                 ])
             }
-        
+
+        let channel: Channel
         do {
-            let channel = try await bootstrap.bind(host: "127.0.0.1", port: port).get()
-            self.channel = channel
-            
-            logger.info("Command receiver listening on 127.0.0.1:\(port)")
-            
-            // Keep the service running
-            try await channel.closeFuture.get()
+            channel = try await bootstrap.bind(host: "127.0.0.1", port: port).get()
         } catch {
             logger.error("Failed to start command receiver: \(error)")
+            try? await eventLoopGroup.shutdownGracefully()
             throw error
         }
+        self.channel = channel
+        defer { self.channel = nil }
+
+        logger.info("Command receiver listening on 127.0.0.1:\(port)")
+
+        // Wait for the listener to close. ServiceLifecycle never calls shutdown(), so
+        // close the channel ourselves when the group is cancelled (another service, such
+        // as the stdio MCP session, finished) or shuts down gracefully (SIGTERM / SIGINT).
+        // Without this the process outlives stdin EOF and keeps the port bound.
+        try await withTaskCancellationOrGracefulShutdownHandler {
+            try await channel.closeFuture.get()
+        } onCancelOrGracefulShutdown: { [logger] in
+            logger.info("Shutting down command receiver")
+            channel.close(promise: nil)
+        }
+
+        try? await eventLoopGroup.shutdownGracefully()
     }
-    
+
     func shutdown() async {
         logger.info("Shutting down command receiver")
-        
+
         if let channel = channel {
             try? await channel.close().get()
         }
-        
+
         if let eventLoopGroup = eventLoopGroup {
             try? await eventLoopGroup.shutdownGracefully()
         }
@@ -192,7 +206,13 @@ struct MCPService: Service {
     
     func run() async throws {
         try await server.start(transport: transport)
-        await server.waitUntilCompleted()
+        // Stop the MCP server on SIGTERM / SIGINT or when the group is cancelled,
+        // so waitUntilCompleted() returns instead of blocking shutdown.
+        await withTaskCancellationOrGracefulShutdownHandler {
+            await server.waitUntilCompleted()
+        } onCancelOrGracefulShutdown: { [server] in
+            Task { await server.stop() }
+        }
     }
     
     func shutdown() async {

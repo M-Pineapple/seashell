@@ -1664,11 +1664,18 @@ struct Seashell: AsyncParsableCommand {
             }
         }
 
-        // Create service group
+        // Create service group. When the stdio session ends (stdin EOF) the MCP service
+        // returns normally; shut the whole group down gracefully so the command receiver
+        // releases its port and the process exits with status 0.
         let serviceGroup = ServiceGroup(
-            services: [mcpService, commandReceiver],
-            gracefulShutdownSignals: [.sigterm, .sigint],
-            logger: logger
+            configuration: .init(
+                services: [
+                    .init(service: mcpService, successTerminationBehavior: .gracefullyShutdownGroup),
+                    .init(service: commandReceiver)
+                ],
+                gracefulShutdownSignals: [.sigterm, .sigint],
+                logger: logger
+            )
         )
         
         logger.info("MCP Server started successfully")
