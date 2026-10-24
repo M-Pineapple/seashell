@@ -21,7 +21,16 @@ An MCP server + shell toolkit that bridges [Wave Terminal](https://github.com/wa
 
 ---
 
-> **macOS only.** SeaShell is built for macOS (Swift, Darwin APIs) with Wave Terminal and Claude Desktop / Claude Code. It does not build or run on Linux or Windows.
+> **Built for macOS.** The full SeaShell experience needs macOS with Wave Terminal and Claude Desktop / Claude Code. It also builds and runs on Linux as a plain stdio MCP server, which is how registries such as Glama run it: the root `Dockerfile` builds it on the official Swift image, and the server lists all of its tools. Tools that rely on macOS (for example the clipboard and file-watching tools) answer "This tool needs macOS" there. Windows is not supported.
+
+### Linux / container
+
+```bash
+docker build -t seashell .
+docker run --rm -i seashell
+```
+
+The container speaks MCP over stdin/stdout and needs no network or credentials.
 
 ## Quick start
 
@@ -294,6 +303,7 @@ These aren't bugs — they're architectural realities worth knowing up front.
 | **The autonomous daemon's `claude -p` sessions don't update Claude Desktop's open chat in real time.** | Claude Desktop holds its own in-memory state. New turns appended to the `.jsonl` from `claude --resume -p` only become visible after Desktop refreshes/reopens the session. If you have a session open AND the daemon writes to it concurrently, last-write-wins on the file. Pick one or the other to be "live". |
 | **High-volume use can hit Claude.ai subscription rate limits.** | The daemon batches one `claude -p` per project per polling cycle (default 5 s). For typical use this stays under limits. For heavy workloads, increase `SEASHELL_DAEMON_POLL`. |
 | **The blocked-commands list is a guard against mistakes, not a security boundary.** | It matches command text, so a determined caller can rephrase or encode a command. Only connect SeaShell to clients you trust. |
+| **On Linux, macOS-only tools return a "needs macOS" message.** | The Linux build exists so container hosts can build, start and list the server. Wave Terminal, the clipboard and macOS file events are not there, so those tools report it instead of failing silently. |
 | **No cross-machine sync** of inbox or session registry. | All state lives under `~/.seashell/` and `~/.claude/projects/`. You could symlink these into iCloud Drive but it's untested. |
 
 ## FAQ
