@@ -26,8 +26,10 @@ jobs:
         with:
           persist-credentials: false
 
+      # Release matches the Dockerfile. Tests stay on the default debug
+      # configuration, because a release module is not built for @testable import.
       - name: Build
-        run: swift build -c release --build-tests
+        run: swift build -c release
 
       - name: Test
-        run: swift test -c release --skip-build --skip SweepGuardTests/testScratchFolderIsPrivate
+        run: swift test --skip SweepGuardTests/testScratchFolderIsPrivate
