@@ -1,0 +1,35 @@
+# Matches the Linux container build in the root Dockerfile (swift:6.0-jammy).
+# SweepGuardTests.testScratchFolderIsPrivate expects a scratch folder outside
+# /tmp. On Linux, NSTemporaryDirectory() is /tmp, so that one test is skipped.
+# The rest of the suite runs here and does not need network access or secrets.
+
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build and test
+    runs-on: ubuntu-latest
+    container:
+      image: swift:6.0-jammy
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # Release matches the Dockerfile. Tests stay on the default debug
+      # configuration, because a release module is not built for @testable import.
+      - name: Build
+        run: swift build -c release
+
+      - name: Test
+        run: swift test --skip SweepGuardTests/testScratchFolderIsPrivate
